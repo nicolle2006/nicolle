@@ -3,55 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario de Amor</title>
+    <title>Guardar y Ver Datos de Amor</title>
     <!-- Agrega los scripts de Firebase -->
     <script type="module">
-        // Importa las funciones necesarias desde los SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-analytics.js";
+        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
 
         // Configuración de Firebase
         const firebaseConfig = {
-          apiKey: "AIzaSyATDUDWr5nG8XtUiipsSJzdS9F581qdZYs",
-          authDomain: "base-de-datos-amor.firebaseapp.com",
-          projectId: "base-de-datos-amor",
-          storageBucket: "base-de-datos-amor.appspot.com",
-          messagingSenderId: "271807318249",
-          appId: "1:271807318249:web:9bc99c38dab283da9bc878",
-          measurementId: "G-D24ZP1MHCJ"
+            apiKey: "AIzaSyATDUDWr5nG8XtUiipsSJzdS9F581qdZYs",
+            authDomain: "base-de-datos-amor.firebaseapp.com",
+            projectId: "base-de-datos-amor",
+            storageBucket: "base-de-datos-amor.appspot.com",
+            messagingSenderId: "271807318249",
+            appId: "1:271807318249:web:9bc99c38dab283da9bc878",
+            measurementId: "G-D24ZP1MHCJ"
         };
 
         // Inicializa Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const analytics = getAnalytics(app);
 
-        // Maneja el formulario
+        // Función para guardar datos
+        async function guardarDatos(porcentajeAmor) {
+            try {
+                await addDoc(collection(db, 'niveles_amor'), {
+                    porcentaje: porcentajeAmor
+                });
+                alert('Nivel de amor guardado exitosamente');
+                mostrarDatos(); // Actualiza la vista de los datos después de guardar
+            } catch (error) {
+                console.error('Error al guardar el dato:', error);
+                alert('Error al guardar el dato: ' + error.message);
+            }
+        }
+
+        // Función para mostrar datos
+        async function mostrarDatos() {
+            const querySnapshot = await getDocs(collection(db, 'niveles_amor'));
+            const container = document.getElementById('data-container');
+            container.innerHTML = ''; // Limpiar el contenedor antes de agregar nuevos datos
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                container.innerHTML += `<p>Porcentaje: ${data.porcentaje}</p>`;
+            });
+        }
+
+        // Manejo del formulario
         document.addEventListener('DOMContentLoaded', () => {
             const form = document.getElementById('mi-formulario');
-            form.addEventListener('submit', async (event) => {
+            form.addEventListener('submit', (event) => {
                 event.preventDefault();
-
                 const porcentajeAmor = document.getElementById('porcentaje_amor').value;
-
-                try {
-                    await addDoc(collection(db, 'niveles_amor'), {
-                        porcentaje: porcentajeAmor
-                    });
-                    alert('Nivel de amor guardado exitosamente');
-                } catch (error) {
-                    console.error('Error al guardar el dato:', error);
-                }
+                guardarDatos(porcentajeAmor);
             });
+
+            mostrarDatos(); // Mostrar datos cuando la página se carga
         });
     </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            text-align: center;
+        }
+        h1 {
+            color: #e57373;
+        }
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 400px;
+            margin: auto;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #e57373;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #f44336;
+        }
+        #data-container {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Formulario de Amor</h1>
-    <form id="mi-formulario">
-        <input type="text" id="porcentaje_amor" name="porcentaje_amor" placeholder="Porcentaje de amor" required>
-        <button type="submit">Enviar</button>
-    </form>
+    <h1>Guardar y Ver Datos de Amor</h1>
+    <div class="form-container">
+        <form id="mi-formulario">
+            <label for="porcentaje_amor">Porcentaje de Amor:</label>
+            <input type="number" id="porcentaje_amor" name="porcentaje_amor" min="0" max="100" required>
+            <button type="submit">Guardar</button>
+        </form>
+    </div>
+    <div id="data-container"></div>
 </body>
 </html>
