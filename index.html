@@ -3,127 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Selecciona tu nivel de amor</title>
-    <style>
-        body {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #ffe6e6;
-        }
+    <title>Formulario de Amor</title>
+    <!-- Agrega los scripts de Firebase -->
+    <script type="module">
+        // Importa las funciones necesarias desde los SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-analytics.js";
 
-        .container {
-            background-color: #fff0f5;
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0px 4px 8px rgba(255, 182, 193, 0.4);
-            text-align: center;
-            width: 350px;
-            border: 2px solid #ff69b4;
-        }
+        // Configuración de Firebase
+        const firebaseConfig = {
+          apiKey: "AIzaSyATDUDWr5nG8XtUiipsSJzdS9F581qdZYs",
+          authDomain: "base-de-datos-amor.firebaseapp.com",
+          projectId: "base-de-datos-amor",
+          storageBucket: "base-de-datos-amor.appspot.com",
+          messagingSenderId: "271807318249",
+          appId: "1:271807318249:web:9bc99c38dab283da9bc878",
+          measurementId: "G-D24ZP1MHCJ"
+        };
 
-        h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
-            color: #ff1493;
-        }
+        // Inicializa Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const analytics = getAnalytics(app);
 
-        input[type="range"] {
-            width: 100%;
-            -webkit-appearance: none;
-            appearance: none;
-            height: 8px;
-            background: #ffd1dc;
-            border-radius: 5px;
-            outline: none;
-        }
+        // Maneja el formulario
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('mi-formulario');
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
 
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 24px;
-            height: 24px;
-            background-color: #ff69b4;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 0 5px rgba(255, 105, 180, 0.5);
-        }
+                const porcentajeAmor = document.getElementById('porcentaje_amor').value;
 
-        input[type="range"]::-moz-range-thumb {
-            width: 24px;
-            height: 24px;
-            background-color: #ff69b4;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 0 5px rgba(255, 105, 180, 0.5);
-        }
-
-        .percentage-output {
-            margin-top: 15px;
-            font-size: 22px;
-            color: #ff1493;
-            font-weight: bold;
-        }
-
-        .heart {
-            color: #ff69b4;
-            font-size: 30px;
-            margin-top: 10px;
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        .result-message {
-            margin-top: 20px;
-            font-size: 20px;
-            color: #ff69b4;
-            font-weight: bold;
-        }
-
-        button {
-            padding: 10px 20px;
-            background-color: #ff69b4;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 20px;
-        }
-
-        button:hover {
-            background-color: #ff1493;
-        }
-    </style>
+                try {
+                    await addDoc(collection(db, 'niveles_amor'), {
+                        porcentaje: porcentajeAmor
+                    });
+                    alert('Nivel de amor guardado exitosamente');
+                } catch (error) {
+                    console.error('Error al guardar el dato:', error);
+                }
+            });
+        });
+    </script>
 </head>
 <body>
-    <div class="container">
-        <h1>Elige tu nivel de amor por mi (Para que regresemos)❤️</h1>
-
-        <!-- Formulario para enviar el porcentaje -->
-        <form action="guardar_amor.php" method="POST">
-            <input type="range" id="percentageSlider" name="porcentaje_amor" min="0" max="100" value="50" step="1" oninput="updatePercentage()">
-            <p class="percentage-output">Nivel de amor: <span id="percentageValue">50</span>%</p>
-            <button type="submit">Guardar nivel de amor</button>
-        </form>
-        <div class="heart">💖</div>
-    </div>
-
-    <script>
-        function updatePercentage() {
-            var slider = document.getElementById("percentageSlider");
-            var output = document.getElementById("percentageValue");
-            output.textContent = slider.value;
-        }
-    </script>
+    <h1>Formulario de Amor</h1>
+    <form id="mi-formulario">
+        <input type="text" id="porcentaje_amor" name="porcentaje_amor" placeholder="Porcentaje de amor" required>
+        <button type="submit">Enviar</button>
+    </form>
 </body>
 </html>
